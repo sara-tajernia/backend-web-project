@@ -23,7 +23,11 @@ class EndpointAddView(generics.CreateAPIView):
 
     def post(self,request):
         # user add endpoint
+        # user can max add 20 endpoint
         user = request.user
+        endpoint = EndpointAdd.objects.filter(user_id=user.id)
+        if len(endpoint) >= 20:
+            return Response("Max endpoint is 20 you cant add more endpoint",status=status.HTTP_400_BAD_REQUEST)
         data={
             "user_id":user.id,
             "url":request.data['url'],

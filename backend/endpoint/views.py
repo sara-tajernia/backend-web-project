@@ -22,9 +22,24 @@ class EndpointAddView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
+        # user add endpoint
         user = request.user
-        ser= EndpointAddSerializers (data=request.data)
+        data={
+            "user_id":user.id,
+            "url":request.data['url'],
+            "threshold":request.data['threshold']
+
+        }
+        ser= EndpointAddSerializers (data=data)
         if ser.is_valid():
             ser.save()
             return Response(ser.data,status=status.HTTP_201_CREATED)
         return Response (ser.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+    # get list of endpoint user
+    def get(self,request):
+        user = request.user
+        endpoint = EndpointAdd.objects.filter(user_id=user.id)
+        ser = EndpointAddSerializers(endpoint,many=True)
+        return Response(ser.data,status=status.HTTP_200_OK)
+        
